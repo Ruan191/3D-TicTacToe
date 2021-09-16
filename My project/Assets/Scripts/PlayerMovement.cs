@@ -65,6 +65,9 @@ public class PlayerMovement : NetworkBehaviour
     {
         if (isLocalPlayer)
         {
+            if (Input.GetKeyDown(KeyCode.End))
+                Application.Quit();
+
             if (Vector3.Distance(board.transform.position, transform.position) >= maxAllowedDistance)
             {
                 transform.position = spawnPoint.transform.position;
