@@ -18,10 +18,15 @@ public class PlayerMovement : NetworkBehaviour
     BoardAssembler board;
     GameObject dir;
     UI ui;
+    GameObject spawnPoint;
+
+    public float maxAllowedDistance = 45;
+
 
     float horizontalSpeed = 2.0f;
     float verticalSpeed = 2.0f;
     public float speed = 10.0f;
+    bool cursorHidden;
 
 
     void Start()
@@ -29,12 +34,15 @@ public class PlayerMovement : NetworkBehaviour
         cam = GetComponent<Camera>();
         dir = transform.GetChild(0).gameObject;
         ui = GameObject.FindGameObjectWithTag("UI").GetComponent<UI>();
+        spawnPoint = GameObject.Find("SpawnPoint");
+        maxAllowedDistance = 45;
+
+        transform.position = spawnPoint.transform.position;
 
         if (isLocalPlayer)
         {
             cam.enabled = true;
-            Cursor.lockState = CursorLockMode.Locked;
-            Cursor.visible = false;
+            EnableCursorHide();
         }
         else
         {
@@ -48,7 +56,6 @@ public class PlayerMovement : NetworkBehaviour
         board.Bind();
     }
 
-    Vector3 Dir;
     float side;
     float translation;
     float h;
@@ -58,19 +65,45 @@ public class PlayerMovement : NetworkBehaviour
     {
         if (isLocalPlayer)
         {
+            if (Vector3.Distance(board.transform.position, transform.position) >= maxAllowedDistance)
+            {
+                transform.position = spawnPoint.transform.position;
+            }
+
             translation = Input.GetAxis("Vertical") * speed;
             side = (Input.GetAxis("Horizontal") * speed);
+            float top = 0;
 
+            if (Input.GetKey(KeyCode.Space))
+            {
+                top = 1 * speed;
+            }else if (Input.GetKey(KeyCode.C))
+            {
+                top = -1 * speed;
+            }
+
+            if (Input.GetKeyDown(KeyCode.Escape))
+            {
+                if (cursorHidden)
+                {
+                    DisableCursorHide();
+                }
+                else
+                {
+                    EnableCursorHide();
+                }
+            }
+
+            top *= Time.deltaTime;
             translation *= Time.deltaTime;
             side *= Time.deltaTime;
 
-            transform.Translate(side, 0, translation);
+            transform.Translate(side, top, translation);
 
             h += horizontalSpeed * Input.GetAxis("Mouse X");
             v += verticalSpeed * Input.GetAxis("Mouse Y");
 
             transform.Rotate(-v, h, 0);
-
             transform.eulerAngles = new Vector3(-v, h, 0);
 
             if (Input.GetMouseButtonUp((int)Mouse.LeftClick))
@@ -129,5 +162,19 @@ public class PlayerMovement : NetworkBehaviour
             game.allowedPlayer = players[1];
             ui.topText = "Blues Turn!";
         }
+    }
+
+    void EnableCursorHide()
+    {
+        Cursor.lockState = CursorLockMode.Locked;
+        Cursor.visible = false;
+        cursorHidden = true;
+    }
+
+    void DisableCursorHide()
+    {
+        Cursor.lockState = CursorLockMode.None;
+        Cursor.visible = true;
+        cursorHidden = false;
     }
 }
