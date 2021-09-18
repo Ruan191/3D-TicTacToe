@@ -7,13 +7,11 @@ public class Checker : NetworkBehaviour
 {
     // Start is called before the first frame update
     public BoardAssembler boardAssembler;
-    UI ui;
     GameManager game;
 
     private void Start()
     {
         boardAssembler = GameObject.FindGameObjectWithTag("BA").GetComponent<BoardAssembler>();
-        ui = GameObject.FindGameObjectWithTag("UI").GetComponent<UI>();
         game = GameObject.FindGameObjectWithTag("GameManager").GetComponent<GameManager>();
 
     }
@@ -21,7 +19,6 @@ public class Checker : NetworkBehaviour
     [Client]
     public void Check(Plane selectedPlane, uint userID)
     {
-        Debug.Log("checking -> " + userID + "    " + boardAssembler.planesMap.Length);
         Plane[] foundPlanes = CheckBlock(selectedPlane.point, userID).ToArray();
         List<Plane> ownedPlanes = new List<Plane>();
         int count = 0;
@@ -30,36 +27,30 @@ public class Checker : NetworkBehaviour
         {
             BoardAssembler.BoardPoint diff = Difference(selectedPlane.point, plane.point);
 
-            //Debug.Log(selectedPlane.point.ToString() + diff.ToString());
-
             int planeMax = SetToMax(diff.plane);
             int rowMax = SetToMax(diff.row);
             int platMax = SetToMax(diff.platform);
 
             for (int i = 0; i < boardAssembler.size; i++)
             {
-               // Debug.Log(">>>>>>>>><<<<<<<<<< " + userID);
-                //Debug.Log(platMax + " |" + rowMax + " |" + planeMax + " > " + diff.row);
-                //Debug.Log("---->>> " + (Sum(ref platMax, diff.platform, selectedPlane.point.platform)) + " " + (Sum(ref rowMax, diff.row, selectedPlane.point.row)) + " " + (Sum(ref planeMax, diff.plane, selectedPlane.point.plane)));
-                Plane currentPlane = boardAssembler.planesMap[Sum(ref platMax, diff.platform, selectedPlane.point.platform), Sum(ref rowMax, diff.row, selectedPlane.point.row), Sum(ref planeMax, diff.plane, selectedPlane.point.plane)];
-                //currentPlane.gameObject.GetComponent<MeshRenderer>().material.color = Color.red;
+                int plat = Sum(ref platMax, diff.platform, selectedPlane.point.platform);
+                int row = Sum(ref rowMax, diff.row, selectedPlane.point.row);
+                int _plane = Sum(ref planeMax, diff.plane, selectedPlane.point.plane);
+
+                Plane currentPlane = currentPlane = boardAssembler.planesMap[plat, row, _plane];
 
                 if (currentPlane.OwnedBy == userID)
                 {
-                    
                     count++;
                     ownedPlanes.Add(currentPlane);
                     if (count >= boardAssembler.size - 1)
                     {
                         foreach (Plane ownedPlane in ownedPlanes)
                         {
-                            ownedPlane.color = Color.green;//ownedPlane.gameObject.GetComponent<MeshRenderer>().material.color = Color.green;
-                            //ownedPlane.gameObject.GetComponent<MeshRenderer>().material.color = Color.green;
+                            ownedPlane.color = Color.green;
                         }
 
-                        //ui.middleText = "GameOver!";
                         game.isStartable = false;
-
                         break;
                     }
                 }
@@ -67,14 +58,7 @@ public class Checker : NetworkBehaviour
 
             count = 0;
             ownedPlanes.Clear();
-
-            //Debug.Log(selectedPlane.point.ToString() + " " + plane.point.ToString() + " " + dir.ToString());
-
-
-            //SetToMax
         }
-       // if (foundPlane != null)
-         //   foundPlane.gameObject.GetComponent<MeshRenderer>().material.color = Color.red;
     }
 
     public List<Plane> CheckBlock(BoardAssembler.BoardPoint point, uint userID)

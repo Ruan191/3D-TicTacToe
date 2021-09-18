@@ -45,6 +45,7 @@ public class BoardAssembler : NetworkBehaviour
                     {
                         GameObject selectedPlane = selectedRow.GetChild(planeIndex).gameObject;
                         selectedPlane.GetComponent<Plane>().point = new BoardPoint(platformIndex, row, planeIndex);
+                        selectedPlane.GetComponent<Plane>().pointStr = new BoardPoint(platformIndex, row, planeIndex).ToString();
                         planesMap[platformIndex, row, planeIndex] = selectedPlane.GetComponent<Plane>();
                     }
                     else
