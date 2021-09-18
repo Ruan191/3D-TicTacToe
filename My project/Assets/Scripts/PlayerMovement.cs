@@ -43,7 +43,6 @@ public class PlayerMovement : NetworkBehaviour
         {
             cam.enabled = true;
             EnableCursorHide();
-            Application.targetFrameRate = 120;
         }
         else
         {
@@ -54,6 +53,7 @@ public class PlayerMovement : NetworkBehaviour
         checker = GameObject.FindGameObjectWithTag("Checker").GetComponent<Checker>();
         board = GameObject.FindGameObjectWithTag("BA").GetComponent<BoardAssembler>();
         game.playerIds.Add(netId);
+        board.Bind();
     }
 
     float side;
