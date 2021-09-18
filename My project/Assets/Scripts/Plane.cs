@@ -12,6 +12,7 @@ public class Plane : NetworkBehaviour
     [SyncVar] public List<Plane> top = new List<Plane>();
     [SyncVar] public List<List<Plane>> platforms;*/
     public BoardAssembler.BoardPoint point;
+    [SyncVar]public string pointStr;
     //GameObject gameObject;
     [SyncVar(hook = "ChangeColor")]
     public Color color;

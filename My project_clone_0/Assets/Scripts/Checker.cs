@@ -38,15 +38,23 @@ public class Checker : NetworkBehaviour
 
             for (int i = 0; i < boardAssembler.size; i++)
             {
-               // Debug.Log(">>>>>>>>><<<<<<<<<< " + userID);
+                // Debug.Log(">>>>>>>>><<<<<<<<<< " + userID);
                 //Debug.Log(platMax + " |" + rowMax + " |" + planeMax + " > " + diff.row);
                 //Debug.Log("---->>> " + (Sum(ref platMax, diff.platform, selectedPlane.point.platform)) + " " + (Sum(ref rowMax, diff.row, selectedPlane.point.row)) + " " + (Sum(ref planeMax, diff.plane, selectedPlane.point.plane)));
-                Plane currentPlane = boardAssembler.planesMap[Sum(ref platMax, diff.platform, selectedPlane.point.platform), Sum(ref rowMax, diff.row, selectedPlane.point.row), Sum(ref planeMax, diff.plane, selectedPlane.point.plane)];
-                //currentPlane.gameObject.GetComponent<MeshRenderer>().material.color = Color.red;
+                int plat = Sum(ref platMax, diff.platform, selectedPlane.point.platform);
+                int row = Sum(ref rowMax, diff.row, selectedPlane.point.row);
+                int _plane = Sum(ref planeMax, diff.plane, selectedPlane.point.plane);
+
+                Plane currentPlane = currentPlane = boardAssembler.planesMap[plat, row, _plane];
+                    
+                ui.middleText += $"{currentPlane.point.ToString()}";//$"{diff}  {plat} {row} {_plane}";
+
+                currentPlane.gameObject.GetComponent<MeshRenderer>().material.color = Color.red;
 
                 if (currentPlane.OwnedBy == userID)
                 {
-                    
+                    //Debug.Log("<><><><><>");
+                    //currentPlane.gameObject.GetComponent<MeshRenderer>().material.color = Color.white;
                     count++;
                     ownedPlanes.Add(currentPlane);
                     if (count >= boardAssembler.size - 1)

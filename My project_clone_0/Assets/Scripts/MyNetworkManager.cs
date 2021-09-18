@@ -25,6 +25,7 @@ public class MyNetworkManager : NetworkManager
         {
             game.isStartable = true;
             game.allowedPlayer = game.playerIds[0];
+            board.Bind();
         }
     }
 
